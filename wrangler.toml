@@ -1,0 +1,65 @@
+name = "allowkit"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+# account_id = "REPLACE_WITH_CF_ACCOUNT_ID"   # required if your wrangler login sees more than one account
+
+# Disable the *.workers.dev preview URL on production. Forces all traffic
+# through your registered domain (where Cloudflare WAF rate limits, custom
+# rules, and DNS-level protections apply). Without this, an attacker could
+# bypass your domain-level CF rules by hitting the workers.dev URL directly.
+workers_dev = false
+
+# Bind the worker to a public hostname. Uncomment and set the pattern
+# you want AllowKit to live at — `custom_domain = true` makes Cloudflare
+# auto-provision the proxied DNS record on first deploy.
+# [[routes]]
+# pattern = "allowkit.example.com"
+# custom_domain = true
+
+# ─── Public config (per-instance) ─────────────────────────────────────────────
+[vars]
+# Comma-separated allowlist of valid appId values (e.g. web,mobile,desktop).
+# Must be lowercase alphanumeric, dashes, or underscores. AppIds containing
+# both `-` and `_` are forbidden (env-var name collision).
+APP_IDS = "web,mobile,desktop"
+# Comma-separated allowlist of origins permitted to call this API.
+# Replace with your real public origins before deploying. For local dev,
+# add your dev-server origin (e.g. http://localhost:5173) and override via
+# .dev.vars or `[env.local]`. The Worker rejects every request whose
+# `Origin` header isn't in this list.
+ALLOWED_ORIGINS = "https://your-app.example.com"
+# Comma-separated appIds that MUST send a JWT bearer token (HS256, signed
+# with the per-app secret). Browser apps (the anonymous web surface) should
+# be omitted — they cannot safely store the secret and rely instead on the
+# Origin allowlist enforcement below.
+APP_SIGNED_IDS = "mobile,desktop"
+# JWT lifetime cap in seconds. Default 300 (5 min). Hard-capped at 900 (15
+# min) regardless of value here.
+JWT_MAX_AGE_SECONDS = "300"
+# Optional override of the subject-id pattern (default: UUIDv4 regex). If the
+# pattern fails to compile the worker fails closed (refuses all writes).
+# SUBJECT_ID_PATTERN = "^[0-9a-f]{32}$"
+
+# ─── Secrets (set via `wrangler secret put NAME`) ─────────────────────────────
+# HASH_SALT                   — per-instance salt for hashing subject IDs and IPs.
+# APP_SECRET_MOBILE           — JWT signing secret for the `mobile` app.
+# APP_SECRET_DESKTOP          — JWT signing secret for the `desktop` app.
+# (Add APP_SECRET_<UPPER_APPID> for every appId listed in APP_SIGNED_IDS.)
+
+# ─── KV: latest consent state per subject ─────────────────────────────────────
+# Create via: wrangler kv namespace create allowkit_consent
+[[kv_namespaces]]
+binding = "CONSENT_KV"
+id = "REPLACE_WITH_KV_ID"
+
+# ─── D1: append-only audit log ────────────────────────────────────────────────
+# Create via: wrangler d1 create allowkit_audit
+[[d1_databases]]
+binding = "AUDIT_DB"
+database_name = "allowkit_audit"
+database_id = "REPLACE_WITH_D1_ID"
+migrations_dir = "migrations"
+
+[observability]
+enabled = true
