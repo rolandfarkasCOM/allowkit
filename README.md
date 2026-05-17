@@ -1,8 +1,8 @@
-# AllowKit
+# AllowKit — Open-Source Consent Management API for Cloudflare Workers
 
-Minimal, developer-first consent backend for GA4, Microsoft Clarity, and Brevo. Cloudflare-native: Worker + KV + D1.
+Minimal, developer-first **consent management backend** for GA4 (Google Analytics 4), Microsoft Clarity, and Brevo. Self-hosted on Cloudflare: Worker + KV + D1. MIT-licensed.
 
-AllowKit stores and synchronises consent across web, mobile, and desktop apps under a single domain instance. **You bring your own UI.** AllowKit provides the API.
+AllowKit is a **consent API** that stores and synchronises consent across web, mobile, and desktop apps under a single domain, backed by an append-only audit log for GDPR Art. 7(1) "demonstrable consent". One subject, one consent state, shared everywhere. **You bring your own UI** — AllowKit provides the API.
 
 ## What it does not provide
 
@@ -10,6 +10,10 @@ AllowKit stores and synchronises consent across web, mobile, and desktop apps un
 - npm packages or script loaders
 - IAB TCF support
 - Legal advice
+
+## Open-source alternative to CookieYes, OneTrust, and Cookiebot
+
+AllowKit is the backend-only, **self-hosted alternative** to UI-first consent SaaS like CookieYes, OneTrust, Cookiebot, and Iubenda. Those products bundle a cookie banner widget with a hosted backend; AllowKit is the inverse — no widget, no hosted SaaS, no per-domain pricing, no third-party script tag on your site. You keep your design system and own your data; AllowKit runs on your own Cloudflare account and gives you the consent API, the audit log, and cross-platform consent state for GA4, Microsoft Clarity, and Brevo.
 
 ## Core principles
 
@@ -74,7 +78,7 @@ Stronger than the web case — every write is bound to a specific authenticated 
 
 ---
 
-## API
+## Consent API endpoints
 
 | Method | Path                       | Purpose                                                                                  |
 |--------|----------------------------|------------------------------------------------------------------------------------------|
@@ -146,7 +150,7 @@ curl -X POST https://allowkit.example.com/consent \
 
 ---
 
-## Security
+## Security model
 
 | Layer | Protection |
 |---|---|
@@ -176,7 +180,7 @@ curl -X POST https://allowkit.example.com/consent \
 
 ---
 
-## Setup
+## Setup on Cloudflare Workers
 
 ```bash
 npm install
@@ -247,7 +251,7 @@ npm run deploy   # to Cloudflare
 
 ---
 
-## Development
+## Development and testing
 
 ```bash
 npm run typecheck    # tsc --noEmit
